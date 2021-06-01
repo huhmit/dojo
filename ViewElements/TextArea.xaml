@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-             xmlns:toolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewmodels="clr-namespace:Dojo.ViewModels"
+             xmlns:props="clr-namespace:Dojo.DependencyProperties"
              d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450"
@@ -15,26 +16,253 @@
                         Executed="OpenHyperlink" />
     </FrameworkElement.CommandBindings>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <ScrollViewer Grid.Column="0">
-            <toolkit:RichTextBox x:Name="Source"
-                                 Text="{Binding PlainText, UpdateSourceTrigger=PropertyChanged}"
+        <ScrollViewer Grid.Column="0"
+                      Grid.Row="1">
+            <TextBox x:Name="Source"
+                     Text="{Binding PlainText, UpdateSourceTrigger=PropertyChanged}"
+                     props:TextBoxHelper.SelectedText="{Binding SelectedText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Foreground="#DCDCCC"
+                     CaretBrush="#DCDCCC"
+                     Padding="20"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Hidden">
+                <TextBox.ContextMenu>
+                    <ContextMenu FontFamily="consolas"
+                                 FontWeight="Light"
                                  FontSize="14"
-                                 Foreground="#DCDCCC"
-                                 Background="Transparent"
-                                 BorderBrush="Transparent"
-                                 Padding="20,10,20,0"
-                                 CaretBrush="#DCDCCC">
-                <toolkit:RichTextBox.TextFormatter>
-                    <toolkit:PlainTextFormatter />
-                </toolkit:RichTextBox.TextFormatter>
-            </toolkit:RichTextBox>
+                                 Background="#252526">
+                        <MenuItem Header="Cut" 
+                                  Command="ApplicationCommands.Cut" 
+                                  InputGestureText="Ctrl+X" Icon="{materialDesign:PackIcon Kind=ContentCut}" />
+                        <MenuItem Header="Copy" 
+                                  Command="ApplicationCommands.Copy" 
+                                  InputGestureText="Ctrl+C" Icon="{materialDesign:PackIcon Kind=ContentCopy}" />
+                        <MenuItem Header="Paste" 
+                                  Command="ApplicationCommands.Paste" 
+                                  InputGestureText="Ctrl+V" Icon="{materialDesign:PackIcon Kind=ContentPaste}" />
+                        <Separator />
+                        <MenuItem Header="Undo"
+                                  Command="ApplicationCommands.Undo"
+                                  InputGestureText="Ctrl+Z" Icon="{materialDesign:PackIcon Kind=Undo}" />
+                        <MenuItem Header="Redo"
+                                  Command="ApplicationCommands.Redo"
+                                  InputGestureText="Ctrl+Y" Icon="{materialDesign:PackIcon Kind=Redo}" />
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
         </ScrollViewer>
         <FlowDocumentScrollViewer x:Name="Viewer"
                                   Document="{Binding MarkdownDocument, UpdateSourceTrigger=PropertyChanged}"
-                                  Grid.Column="1" />
+                                  Grid.Column="1"
+                                  Grid.Row="1" />
+
+        <Grid Grid.ColumnSpan="2">
+            <ToolBarTray Height="25"
+                         IsLocked="True"
+                         Background="#252526">
+                <ToolBar Height="25"
+                         Background="#252526">
+                    <Button Padding="0"
+                            Command="{Binding BoldCommand}"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatBold"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatItalic"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatStrikethrough"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatSize"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Separator />
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatQuoteOpen"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="CodeTags"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="Link"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="Table"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="ImageOutline"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Separator />
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatListBulleted"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatListNumbered"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                    <Button Padding="0"
+                            Margin="1,0,1,0">
+                        <materialDesign:PackIcon Kind="FormatListChecks"
+                                                 Foreground="#DCDCCC" />
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+            <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges"
+                                     HorizontalAlignment="Right"
+                                     Margin="0,0,7,0"
+                                     Padding="0,0">
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="DotsHorizontal"
+                                             Foreground="#DCDCCC"
+                                             Height="25"
+                                             Width="25" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel Width="200"
+                            Background="#252526">
+                    <Button Content="  New File"
+                            VerticalContentAlignment="Center"
+                            Height="35"
+                            FontSize="14">
+                        <Button.Style>
+                            <Style  TargetType="Button">
+                                <Setter Property="Background"
+                                        Value="Transparent" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                                <Setter Property="Foreground"
+                                        Value="#DCDCCC" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border x:Name="bg"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="Transparent">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver"
+                                                         Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="#3179CB"
+                                                            TargetName="bg" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Separator Width="175" />
+                    <Button Content="  Open File"
+                            VerticalContentAlignment="Center"
+                            Height="35"
+                            FontSize="14">
+                        <Button.Style>
+                            <Style  TargetType="Button">
+                                <Setter Property="Background"
+                                        Value="Transparent" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                                <Setter Property="Foreground"
+                                        Value="#DCDCCC" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border x:Name="bg"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="Transparent">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver"
+                                                         Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="#3179CB"
+                                                            TargetName="bg" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Separator Width="175" />
+                    <Button Content="  Save File"
+                            VerticalContentAlignment="Center"
+                            Height="35"
+                            FontSize="14">
+                        <Button.Style>
+                            <Style  TargetType="Button">
+                                <Setter Property="Background"
+                                        Value="Transparent" />
+                                <Setter Property="VerticalAlignment"
+                                        Value="Center" />
+                                <Setter Property="Foreground"
+                                        Value="#DCDCCC" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border x:Name="bg"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderThickness="0,0,0,1"
+                                                    BorderBrush="Transparent">
+                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                                                  VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver"
+                                                         Value="True">
+                                                    <Setter Property="Background"
+                                                            Value="#3179CB"
+                                                            TargetName="bg" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+            <Grid.Resources>
+                <SolidColorBrush x:Key="MaterialDesignCardBackground"
+                                 Color="#252526" />
+            </Grid.Resources>
+        </Grid>
     </Grid>
 </UserControl>
