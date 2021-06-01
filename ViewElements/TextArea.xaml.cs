@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using Dojo.ViewModels;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Media;
+
+
 
 namespace Dojo.ViewElements
 {
@@ -11,6 +14,7 @@ namespace Dojo.ViewElements
     {
         public TextArea()
         {
+            DataContext = new MainWindowViewModel();
             InitializeComponent();
             Viewer.Background = Brushes.White;
         }
