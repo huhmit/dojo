@@ -1,20 +1,21 @@
-﻿namespace Dojo.ViewModels
-{
-    using Markdig;
-    using Markdig.Wpf;
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using System.Text;
-    using System.Windows.Documents;
-    using System.Windows.Input;
-    using System.Xaml;
-    using XamlReader = System.Windows.Markup.XamlReader;
+﻿using Dojo.Commands;
+using Markdig;
+using Markdig.Wpf;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Xaml;
+using XamlReader = System.Windows.Markup.XamlReader;
 
+namespace Dojo.ViewModels
+{
     public class MainWindowViewModel : ViewModelBase
     {
         private FlowDocument _markdownDocument;
-        private string _plainText;
+        private string _plainText, _selectedText;
 
         private ICommand _boldCommand;
 
@@ -45,12 +46,49 @@
             }
         }
 
+        public string SelectedText
+        {
+            get
+            {
+                return _selectedText;
+            }
+            set
+            {
+                _selectedText = value;
+                NotifyPropertyChanged(nameof(SelectedText));
+            }
+        }
+
+        public ICommand BoldCommand
+        {
+            get
+            {
+                if (_boldCommand == null)
+                {
+                    _boldCommand = new RelayCommand(param => Bold(), null);
+                }
+                return _boldCommand;
+            }
+        }
+
         public MainWindowViewModel()
         {
             MarkdownDocument = new FlowDocument();
             PlainText = File.ReadAllText(@"C:\Users\charlton.cameron\Desktop\todo.md");
+            SelectedText = "";
         }
 
+        private void Bold()
+        {
+            if (string.IsNullOrEmpty(SelectedText))
+            {
+                SelectedText = "**bold text**";
+                return;
+            }
+            SelectedText = $"**{SelectedText}**";
+        }
+
+        #region Markdown Methods
         private static MarkdownPipeline BuildPipeline()
         {
             return new MarkdownPipelineBuilder()
@@ -82,5 +120,6 @@
                 return base.TryGetCompatibleXamlNamespace(xamlNamespace, out compatibleNamespace);
             }
         }
+        #endregion
     }
 }
