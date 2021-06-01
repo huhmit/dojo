@@ -20,11 +20,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
-            <RowDefinition Height="25" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <el:TitleBar Grid.Row="0" MouseDown="TitleBar_MouseDown"/>
-        <el:ToolBar Grid.Row="1" />
-        <el:TextArea Grid.Row="2" />
+        <!--<el:ToolBar Grid.Row="1" />-->
+        <el:TextArea Grid.Row="1" />
     </Grid>
 </Window>
