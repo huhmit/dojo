@@ -21,8 +21,9 @@
                     Height="25"
                     Cursor="Arrow"
                     Click="ButtonMinimise_Click">
-                <materialDesign:PackIcon Kind="WindowMinimize"
-                                         Foreground="#888774"/>
+                <materialDesign:PackIcon Kind="Minus"
+                                         Foreground="#888774"
+                                         Height="20"/>
                 <Button.Style>
                     <Style  TargetType="Button">
                         <Setter Property="Background"
@@ -59,8 +60,10 @@
                     Height="25"
                     Cursor="Arrow"
                     Click="ButtonMaximise_Click">
-                <materialDesign:PackIcon Kind="WindowMaximize"
-                                         Foreground="#888774"/>
+                <materialDesign:PackIcon x:Name="maxIcon" 
+                                         Kind="SquareOutline"
+                                         Foreground="#888774"
+                                         Height="20"/>
                 <Button.Style>
                     <Style  TargetType="Button">
                         <Setter Property="Background"
@@ -98,7 +101,8 @@
                     Cursor="Arrow"
                     Click="ButtonClose_Click">
                 <materialDesign:PackIcon Kind="WindowClose"
-                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=Foreground}"/>
+                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=Foreground}"
+                                         Height="20"/>
                 <Button.Style>
                     <Style  TargetType="Button">
                         <Setter Property="Background"
