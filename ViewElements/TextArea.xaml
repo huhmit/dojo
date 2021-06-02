@@ -28,10 +28,13 @@
                       Grid.Row="1">
             <TextBox x:Name="Source"
                      Text="{Binding PlainText, UpdateSourceTrigger=PropertyChanged}"
-                     props:TextBoxHelper.SelectedText="{Binding SelectedText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     props:SelectedText.SelectedText="{Binding SelectedText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     props:CaretIndex.TrackCaretIndex="True"
+                     props:CaretIndex.CursorPosition="{Binding CaretIndex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                      Foreground="#DCDCCC"
                      CaretBrush="#DCDCCC"
                      Padding="20"
+                     AcceptsReturn="True"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Hidden">
                 <TextBox.ContextMenu>
@@ -70,65 +73,76 @@
                          Background="#252526">
                 <ToolBar Height="25"
                          Background="#252526">
-                    <Button Padding="0"
-                            Command="{Binding BoldCommand}"
+                    <Button Command="{Binding BoldCommand}" 
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatBold"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding ItalicCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatItalic"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding StrikethroughCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatStrikethrough"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding HeadingCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatSize"
                                                  Foreground="#DCDCCC" />
                     </Button>
                     <Separator />
-                    <Button Padding="0"
+                    <Button Command="{Binding BlockQuoteCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatQuoteOpen"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding CodeCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="CodeTags"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding LinkCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="Link"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding TableCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="Table"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding ImageCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="ImageOutline"
                                                  Foreground="#DCDCCC" />
                     </Button>
                     <Separator />
-                    <Button Padding="0"
+                    <Button Command="{Binding UnorderedListCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatListBulleted"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding OrderedListCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatListNumbered"
                                                  Foreground="#DCDCCC" />
                     </Button>
-                    <Button Padding="0"
+                    <Button Command="{Binding CheckListCommand}"
+                            Padding="0"
                             Margin="1,0,1,0">
                         <materialDesign:PackIcon Kind="FormatListChecks"
                                                  Foreground="#DCDCCC" />
