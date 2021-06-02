@@ -3,9 +3,8 @@ using System.Windows.Controls;
 
 namespace Dojo.DependencyProperties
 {
-    public static class TextBoxHelper
+    public static class SelectedText
     {
-
         public static string GetSelectedText(DependencyObject obj)
         {
             return (string)obj.GetValue(SelectedTextProperty);
@@ -21,7 +20,7 @@ namespace Dojo.DependencyProperties
             DependencyProperty.RegisterAttached(
                 "SelectedText",
                 typeof(string),
-                typeof(TextBoxHelper),
+                typeof(SelectedText),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, SelectedTextChanged));
 
         private static void SelectedTextChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -51,6 +50,5 @@ namespace Dojo.DependencyProperties
                 SetSelectedText(tb, tb.SelectedText);
             }
         }
-
     }
 }
