@@ -5,14 +5,14 @@ using System.Windows.Media;
 
 
 
-namespace Dojo.ViewElements
+namespace Dojo.Views.UserControls
 {
     /// <summary>
     /// Interaction logic for TextArea.xaml
     /// </summary>
-    public partial class TextArea : UserControl
+    public partial class Editor : UserControl
     {
-        public TextArea()
+        public Editor()
         {
             DataContext = new MainWindowViewModel();
             InitializeComponent();

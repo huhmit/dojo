@@ -1,33 +1,35 @@
 ﻿using Dojo.Commands;
+using Dojo.Services;
 using Markdig;
 using Markdig.Wpf;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Xaml;
 using XamlReader = System.Windows.Markup.XamlReader;
+using System.Text.RegularExpressions;
 
 namespace Dojo.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         #region Private Fields
+        private readonly MessageBoxService _messageBoxService;
         private FlowDocument _markdownDocument;
-        private string _plainText, _selectedText;
+        private string _plainText, _selectedText, _currentFile;
         private int _caretIndex;
         #endregion
 
         #region Public Fields
         public FlowDocument MarkdownDocument
         {
-            get
-            {
-                return _markdownDocument;
-            }
+            get => _markdownDocument;
             set
             {
                 _markdownDocument = value;
@@ -36,10 +38,7 @@ namespace Dojo.ViewModels
         }
         public string PlainText
         {
-            get
-            {
-                return _plainText;
-            }
+            get => _plainText;
             set
             {
                 _plainText = value;
@@ -49,22 +48,25 @@ namespace Dojo.ViewModels
         }
         public string SelectedText
         {
-            get
-            {
-                return _selectedText;
-            }
+            get => _selectedText;
             set
             {
                 _selectedText = value;
                 NotifyPropertyChanged(nameof(SelectedText));
             }
         }
+        public string CurrentFile
+        {
+            get => _currentFile;
+            set
+            {
+                _currentFile = value;
+                NotifyPropertyChanged(nameof(CurrentFile));
+            }
+        }
         public int CaretIndex
         {
-            get
-            {
-                return _caretIndex;
-            }
+            get => _caretIndex;
             set
             {
                 _caretIndex = value;
@@ -74,9 +76,13 @@ namespace Dojo.ViewModels
         #endregion
 
         #region Commands
-        private ICommand _boldCommand, _italicCommand, _strikethroughCommand, _headingCommand, 
-            _blockQuoteCommand, _codeCommand, _linkCommand, _tableCommand, _imageCommand, 
-            _unorderedListCommand, _orderedListCommand, _checkListCommand;
+        private ICommand _boldCommand, _italicCommand, _strikethroughCommand, _headingCommand,
+                         _blockQuoteCommand, _codeCommand, _linkCommand, _tableCommand, _imageCommand,
+                         _unorderedListCommand, _orderedListCommand, _checkListCommand;
+
+        private ICommand _newFileCommand, _openFileCommand, _saveFileCommand;
+
+        private ICommand _handleReturnCommand;
 
         public ICommand BoldCommand
         {
@@ -210,13 +216,58 @@ namespace Dojo.ViewModels
                 return _checkListCommand;
             }
         }
+        public ICommand NewFileCommand
+        {
+            get
+            {
+                if (_newFileCommand == null)
+                {
+                    _newFileCommand = new RelayCommand(param => NewFile(), null);
+                }
+                return _newFileCommand;
+            }
+        }
+        public ICommand OpenFileCommand
+        {
+            get
+            {
+                if (_openFileCommand == null)
+                {
+                    _openFileCommand = new RelayCommand(param => OpenFile(), null);
+                }
+                return _openFileCommand;
+            }
+        }
+        public ICommand SaveFileCommand
+        {
+            get
+            {
+                if (_saveFileCommand == null)
+                {
+                    _saveFileCommand = new RelayCommand(param => SaveFile(), null);
+                }
+                return _saveFileCommand;
+            }
+        }
+        public ICommand HandleReturnCommand
+        {
+            get
+            {
+                if (_handleReturnCommand == null)
+                {
+                    _handleReturnCommand = new RelayCommand(param => HandleReturn(), null);
+                }
+                return _handleReturnCommand;
+            }
+        }
         #endregion
 
         #region C'tor
         public MainWindowViewModel()
         {
-            MarkdownDocument = new FlowDocument();
-            PlainText = File.ReadAllText(@"C:\Users\charlton.cameron\Desktop\todo.md");
+            _messageBoxService = new();
+            MarkdownDocument = new();
+            PlainText = "";
             SelectedText = "";
         }
         #endregion
@@ -249,11 +300,11 @@ namespace Dojo.ViewModels
             }
             SelectedText = $"~~{SelectedText}~~";
         }
-        private void Heading() 
+        private void Heading()
         {
             if (string.IsNullOrEmpty(SelectedText))
             {
-                SelectedText = "\n# Heading";
+                SelectedText = "# Heading";
                 return;
             }
 
@@ -261,7 +312,7 @@ namespace Dojo.ViewModels
             headingStart = 0;
             headingEnd = 0;
 
-            for (int i = CaretIndex -1; i > 0; i--)
+            for (int i = CaretIndex - 1; i > 0; i--)
             {
                 if (PlainText[i] != '#' || PlainText[i] != ' ')
                 {
@@ -300,7 +351,7 @@ namespace Dojo.ViewModels
                 SelectedText = " `Blockquote` ";
                 return;
             }
-            SelectedText = $"\n\n`{SelectedText}`\n";
+            SelectedText = $"`{SelectedText}`";
         }
         private void Link()
         {
@@ -318,7 +369,7 @@ namespace Dojo.ViewModels
                 SelectedText = "|  |  |\n|--|--|\n|  |  |";
                 return;
             }
-            SelectedText = $"\n|{SelectedText}|  |\n|{new string('n', SelectedText.Length)}|--|\n|{new string(' ', SelectedText.Length)}|  |\n";
+            SelectedText = $"|{SelectedText}|  |\n|{new string('n', SelectedText.Length)}|--|\n|{new string(' ', SelectedText.Length)}|  |";
         }
         private void Image()
         {
@@ -336,8 +387,8 @@ namespace Dojo.ViewModels
                 SelectedText = "- List Item";
                 return;
             }
-            SelectedText = $"\n- {SelectedText}\n";
-            // pressing enter on a list item should 
+            SelectedText = $"- {SelectedText}";
+            // pressing enter on a list item should append list
         }
         private void OrderedList()
         {
@@ -346,8 +397,8 @@ namespace Dojo.ViewModels
                 SelectedText = "1. List Item";
                 return;
             }
-            SelectedText = $"\n1. {SelectedText}\n";
-            // pressing enter on a list item should 
+            SelectedText = $"1. {SelectedText}";
+            // pressing enter on a list item should append list
         }
         private void CheckList()
         {
@@ -356,12 +407,81 @@ namespace Dojo.ViewModels
                 SelectedText = "- [ ] List Item";
                 return;
             }
-            SelectedText = $"\n- [ ] {SelectedText}\n";
-            // pressing enter on a list item should 
+            SelectedText = $"- [ ] {SelectedText}";
+            // pressing enter on a list item should append list
+        }
+        private void NewFile()
+        {
+            if (HasChanges())
+            {
+                DialogResult result = _messageBoxService.ShowWarningDialog("Do you want to save changes?", "Dojo");
+
+                if (result == DialogResult.Yes)
+                {
+                    SaveFile();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+
+            PlainText = "";
+        }
+        private void OpenFile()
+        {
+            if (HasChanges())
+            {
+                DialogResult result = _messageBoxService.ShowWarningDialog("Do you want to save changes?", "Dojo");
+
+                if (result == DialogResult.Yes)
+                {
+                    SaveFile();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    return;
+                }
+            }
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "Markdown|*.md",
+                RestoreDirectory = true,
+                Title = "Open File"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                CurrentFile = openFileDialog.FileName;
+                PlainText = File.ReadAllText(CurrentFile);
+            }
+        }
+        private void SaveFile()
+        {
+            if (string.IsNullOrEmpty(CurrentFile))
+            {
+                SaveFileDialog saveFileDialog = new()
+                {
+                    Filter = "Markdown|*.md",
+                    DefaultExt = "md",
+                    RestoreDirectory = true,
+                    Title = "Save File As"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, PlainText);
+                }
+            }
+            else
+            {
+                File.WriteAllText(CurrentFile, PlainText);
+            }
         }
         #endregion
 
-        #region Helpers
+        #region Text
         private string GetLine(int index)
         {
             int start, end;
@@ -388,9 +508,34 @@ namespace Dojo.ViewModels
 
             return PlainText[start..end];
         }
+        private void InsertText()
+        {
+            
+        }
+        private void InsertLine(int index)
+        {
+
+        }
+        private void HandleReturn()
+        {
+            Dictionary<string, string> returnCases = new()
+            {
+                { @"(-)( )+(\w| )+", "Unordered List" },
+                { @"(\d)(.)( )+(\w| )+", "Ordered List" },
+                { @"(-)( )(\[])( )+(\w| )+", "Check List" }
+            };
+
+            string match = returnCases.First(x => Regex.IsMatch(GetLine(CaretIndex), x.Key)).Value;
+
+            switch (match)
+            {
+                default:
+                    break;
+            }
+        }
         #endregion
 
-        #region Markdown Methods
+        #region Markdown
         private static MarkdownPipeline BuildPipeline()
         {
             return new MarkdownPipelineBuilder()
@@ -400,10 +545,10 @@ namespace Dojo.ViewModels
 
         private void OnLoaded()
         {
-            var markdown = PlainText;
-            var xaml = Markdig.Wpf.Markdown.ToXaml(markdown, BuildPipeline());
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(xaml));
-            using var reader = new XamlXmlReader(stream, new MyXamlSchemaContext());
+            string markdown = PlainText;
+            string xaml = Markdig.Wpf.Markdown.ToXaml(markdown, BuildPipeline());
+            using MemoryStream stream = new(Encoding.UTF8.GetBytes(xaml));
+            using XamlXmlReader reader = new(stream, new MyXamlSchemaContext());
             if (XamlReader.Load(reader) is FlowDocument document)
             {
                 MarkdownDocument = document;
@@ -421,6 +566,14 @@ namespace Dojo.ViewModels
                 }
                 return base.TryGetCompatibleXamlNamespace(xamlNamespace, out compatibleNamespace);
             }
+        }
+        #endregion
+
+        #region Helpers
+        private bool HasChanges()
+        {
+            string originalText = string.IsNullOrEmpty(CurrentFile) ? "" : File.ReadAllText(CurrentFile);
+            return originalText != PlainText;
         }
         #endregion
     }

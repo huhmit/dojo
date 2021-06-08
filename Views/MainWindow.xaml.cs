@@ -1,8 +1,7 @@
-﻿using Dojo.ViewElements;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
-namespace Dojo
+namespace Dojo.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -17,16 +16,13 @@ namespace Dojo
         {
             if (WindowState == WindowState.Maximized)
             {
-                var point = PointToScreen(e.MouseDevice.GetPosition(this));
+                Point point = PointToScreen(e.MouseDevice.GetPosition(this));
 
-                if (point.X <= RestoreBounds.Width / 2)
-                    Left = 0;
-
-                else if (point.X >= RestoreBounds.Width)
-                    Left = point.X - (RestoreBounds.Width - (ActualWidth - point.X));
-
-                else
-                    Left = point.X - (RestoreBounds.Width / 2);
+                Left = point.X <= RestoreBounds.Width / 2
+                    ? 0
+                    : point.X >= RestoreBounds.Width
+                    ? point.X - (RestoreBounds.Width - (ActualWidth - point.X))
+                    : point.X - (RestoreBounds.Width / 2);
 
                 Top = point.Y - (((FrameworkElement)sender).ActualHeight / 2);
                 WindowState = WindowState.Normal;
